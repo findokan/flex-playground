@@ -2,31 +2,29 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const NavigationBarItem = ({ item }) => {
+	function isSelected() {
+		return window.location.pathname === item.redirectUrl ? true : false;
+	}
+
 	if (item.displayType === "icon") {
 		return (
 			<li key={item.name}>
-				<Link to={item.redirectUrl} style={{ textDecoration: "none" }}>
-					<img src={item.iconUrl} alt="Logo of the website" width={50} />
-				</Link>
+				<a href={item.redirectUrl}>
+					<img src={item.iconUrl} alt="Logo of the website" width={35} />
+				</a>
 			</li>
 		);
 	} else {
 		return (
 			<li key={item.name}>
-				{item.isRedirectToOutside ? (
-					<a
-						href={item.redirectUrl}
-						target="_blank"
-						rel="noreferrer"
-						style={{ textDecoration: "none" }}
-					>
-						{item.label}
-					</a>
-				) : (
-					<Link to={item.redirectUrl} style={{ textDecoration: "none" }}>
-						{item.label}
-					</Link>
-				)}
+				<a
+					className={isSelected() ? "selected" : null}
+					href={item.redirectUrl}
+					target={item.isRedirectToOutside ? "_blank" : null}
+					rel={item.isRedirectToOutside ? "noreferrer" : null}
+				>
+					{item.label}
+				</a>
 			</li>
 		);
 	}

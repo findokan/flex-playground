@@ -3,17 +3,9 @@ import NavigationBarItem from "./navigation.bar.item.component";
 const NavigationBar = ({ navigationBarItems }) => {
 	return (
 		<nav>
-			<ul
-				style={{
-					display: "flex",
-					flexDirection: "row",
-					alignItems: "center",
-					listStyleType: "none",
-					padding: 0,
-				}}
-			>
+			<ul className="menu-item-container">
 				{navigationBarItems.map((item) => (
-					<div style={{ marginLeft: "40px" }}>
+					<div className="menu-item" key={item.name}>
 						<NavigationBarItem key={item.name} item={item} />
 					</div>
 				))}

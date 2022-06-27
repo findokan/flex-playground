@@ -1,14 +1,108 @@
 html {
 	height: 100%;
+	font-family: sans-serif;
 }
 
 body {
 	height: 100%;
 	margin: 0;
+	font-size: 16px;
 }
 
 #root {
 	display: flex;
 	flex-direction: column;
 	height: 100%;
+}
+
+.menu-item-container {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	list-style-type: none;
+	padding: 5px 15px;
+}
+
+.menu-item-container .menu-item {
+	margin: 0 15px;
+}
+
+.menu-item-container a {
+	text-decoration: none;
+	font-weight: 700;
+	color: #606770;
+	transition: color 0.3s;
+}
+
+.menu-item-container a:hover {
+	color: #1a6891;
+}
+
+.menu-item-container .selected {
+	color: #1a6891;
+}
+
+.pg-container {
+	flex: 1 1 auto;
+	background-color: #f5f5f5;
+	background-image: linear-gradient(#989898 0.3px, transparent 0.7px),
+		linear-gradient(90deg, #989898 0.3px, transparent 0.7px),
+		linear-gradient(#989898 0.4px, transparent 0.4px),
+		linear-gradient(90deg, #989898 0.4px, #f5f5f5 0.4px);
+	background-size: 20px 20px, 20px 20px, 4px 4px, 4px 4px;
+	background-position: -0.8px -0.8px, -0.8px -0.8px, -0.4px -0.4px,
+		-0.4px -0.4px;
+	border: 1px solid #989898;
+	display: flex;
+}
+
+.pg-container .pg-area {
+	flex: 3;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.pg-container .pg-menu-container {
+	flex: 1;
+	padding-top: 30px;
+}
+
+.pg-container .pg-menu-container .pg-menu {
+	background-color: white;
+	display: flex;
+	justify-content: center;
+}
+
+.pg-container .pg-base-item {
+	border: 1px solid #989898;
+}
+
+.pg-selected-item {
+	background-color: #d9effa !important;
+	border: 2px solid #1a6891 !important;
+	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.pg-container .pg-base-item:hover {
+	cursor: pointer;
+}
+
+.pg-container .pg-base-item .pg-item-label {
+	user-select: none;
+	pointer-events: none;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	top: 0;
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-align: center;
+	align-items: center;
+	-ms-flex-pack: center;
+	justify-content: center;
+	font-size: 20px;
+	font-weight: 300;
+	letter-spacing: 1px;
 }
