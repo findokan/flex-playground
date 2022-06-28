@@ -16,6 +16,7 @@ const PGRecursiveItem = ({ item, setSelectedItemId, selectedItemId }) => {
 				backgroundColor: "white",
 				display: "flex",
 				flexDirection: item.styleAttributes.flex.flexDirection,
+				backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1'><text x='48%' y='50%' fill='%239a9a9a' font-size='150%' dominant-baseline='middle' text-anchor='middle'>${item.label}</text></svg>")`,
 			}}
 			onClick={(e) => {
 				e.stopPropagation();

@@ -81,6 +81,10 @@ const PlaygroundPage = () => {
 	});
 	const [selectedItemId, setSelectedItemId] = useState("");
 
+	useEffect(() => {
+		window.lastID = "2";
+	}, []);
+
 	return (
 		<div
 			className="pg-container"
@@ -97,9 +101,11 @@ const PlaygroundPage = () => {
 				/>
 			</div>
 			<div className="pg-menu-container">
-				<div className="pg-menu">
-					<PGMenu dom={pgState} selectedItemId={selectedItemId} />
-				</div>
+				<PGMenu
+					DOM={pgState}
+					setDOM={setPGState}
+					selectedItemId={selectedItemId}
+				/>
 			</div>
 		</div>
 	);
