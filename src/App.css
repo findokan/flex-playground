@@ -119,6 +119,17 @@ body {
 	flex-direction: column;
 }
 
+.pg-menu .pg-menu-add-rm-area {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+}
+
+.pg-menu-add-rm-area button {
+	margin: 5px;
+	text-transform: none;
+}
+
 .pg-menu .pg-menu-share {
 	display: flex;
 	flex-direction: row;
@@ -145,4 +156,9 @@ body {
 	font-size: larger;
 	max-width: 70%;
 	text-align: center;
+}
+
+.pg-menu-input-aligner {
+	display: flex;
+	flex-direction: row;
 }

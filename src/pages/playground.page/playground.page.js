@@ -105,6 +105,7 @@ const PlaygroundPage = () => {
 					DOM={pgState}
 					setDOM={setPGState}
 					selectedItemId={selectedItemId}
+					setSelectedItemId={setSelectedItemId}
 				/>
 			</div>
 		</div>

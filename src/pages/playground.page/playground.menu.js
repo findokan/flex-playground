@@ -1,4 +1,51 @@
-const PGMenu = ({ DOM, setDOM, selectedItemId }) => {
+import React, { useEffect, useState } from "react";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import { Button, TextField } from "@mui/material";
+
+function TabPanel(props) {
+	const { children, value, index, ...other } = props;
+
+	return (
+		<div
+			role="tabpanel"
+			hidden={value !== index}
+			id={`simple-tabpanel-${index}`}
+			aria-labelledby={`simple-tab-${index}`}
+			{...other}
+		>
+			{value === index && (
+				<Box sx={{ p: 3 }}>
+					<Typography>{children}</Typography>
+				</Box>
+			)}
+		</div>
+	);
+}
+
+function a11yProps(index) {
+	return {
+		id: `simple-tab-${index}`,
+		"aria-controls": `simple-tabpanel-${index}`,
+	};
+}
+
+const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
+	const [value, setValue] = useState(0);
+	const [willEditedItem, setWillEditedItem] = useState(
+		getSelectedItem(DOM, selectedItemId)
+	);
+
+	useEffect(() => {
+		setWillEditedItem(getSelectedItem(DOM, selectedItemId));
+	}, [DOM, selectedItemId]);
+
+	const handleChange = (event, newValue) => {
+		setValue(newValue);
+	};
+
 	function isRootNode() {
 		return DOM.id === selectedItemId ? true : false;
 	}
@@ -76,7 +123,7 @@ const PGMenu = ({ DOM, setDOM, selectedItemId }) => {
 			childs: [],
 		});
 		window.lastID = (parseInt(window.lastID) + 1).toString();
-		const editedDOM = editDOM(DOM, selectedItem);
+		const editedDOM = JSON.parse(JSON.stringify(editDOM(DOM, selectedItem)));
 		setDOM(editedDOM);
 	}
 
@@ -88,8 +135,9 @@ const PGMenu = ({ DOM, setDOM, selectedItemId }) => {
 			(child) => child.id === selectedItemId
 		);
 		parentItem.childs.splice(childIndex, 1);
-		const editedDOM = editDOM(DOM, parentItem);
+		const editedDOM = JSON.parse(JSON.stringify(editDOM(DOM, parentItem)));
 		setDOM(editedDOM);
+		setSelectedItemId("");
 	}
 
 	function renderNoSelectedItem() {
@@ -101,26 +149,97 @@ const PGMenu = ({ DOM, setDOM, selectedItemId }) => {
 	}
 
 	function renderSelectedItem() {
+		function renderAddRMNodeButtons() {
+			return (
+				<div className="pg-menu-add-rm-area">
+					<Button
+						variant="contained"
+						onClick={(e) => {
+							e.stopPropagation();
+							addChildNodeToSelectedItem();
+						}}
+					>
+						add child node
+					</Button>
+					<Button
+						variant="outlined"
+						disabled={isRootNode()}
+						onClick={(e) => {
+							e.stopPropagation();
+							deleteNode();
+						}}
+					>
+						delete node
+					</Button>
+				</div>
+			);
+		}
+
 		return (
 			<div>
-				{selectedItemId}
-				<button
+				<Box
+					sx={{ width: "100%" }}
 					onClick={(e) => {
 						e.stopPropagation();
-						addChildNodeToSelectedItem();
 					}}
 				>
-					add child node
-				</button>
-				<button
-					disabled={isRootNode()}
-					onClick={(e) => {
-						e.stopPropagation();
-						deleteNode();
-					}}
-				>
-					delete node
-				</button>
+					<Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+						<Tabs
+							value={value}
+							onChange={handleChange}
+							aria-label="basic tabs example"
+						>
+							<Tab label="Flex" {...a11yProps(0)} />
+							<Tab label="Alignment" {...a11yProps(1)} />
+							<Tab label="Layout" {...a11yProps(2)} />
+						</Tabs>
+					</Box>
+					<TabPanel value={value} index={0}>
+						Flex
+					</TabPanel>
+					<TabPanel value={value} index={1}>
+						Alignment
+					</TabPanel>
+					<TabPanel value={value} index={2}>
+						<Typography>Width x Height</Typography>
+						<div className="pg-menu-input-aligner">
+							<TextField
+								value={willEditedItem?.styleAttributes?.layout.width}
+								onChange={(e) => {
+									if (e.target.value.length === 0) {
+										e.target.value = "0";
+									}
+									let clonedItem = JSON.parse(JSON.stringify(willEditedItem));
+									clonedItem.styleAttributes.layout.width = parseInt(
+										e.target.value
+									);
+									const editedDOM = JSON.parse(
+										JSON.stringify(editDOM(DOM, clonedItem))
+									);
+									setDOM(editedDOM);
+								}}
+							/>
+							<TextField
+								value={willEditedItem?.styleAttributes?.layout.height}
+								onChange={(e) => {
+									debugger;
+									if (e.target.value.length === 0) {
+										e.target.value = "0";
+									}
+									let clonedItem = JSON.parse(JSON.stringify(willEditedItem));
+									clonedItem.styleAttributes.layout.height = parseInt(
+										e.target.value
+									);
+									const editedDOM = JSON.parse(
+										JSON.stringify(editDOM(DOM, clonedItem))
+									);
+									setDOM(editedDOM);
+								}}
+							/>
+						</div>
+					</TabPanel>
+				</Box>
+				{renderAddRMNodeButtons()}
 			</div>
 		);
 	}
