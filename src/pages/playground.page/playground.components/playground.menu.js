@@ -4,33 +4,7 @@ import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { Button, TextField } from "@mui/material";
-
-function TabPanel(props) {
-	const { children, value, index, ...other } = props;
-
-	return (
-		<div
-			role="tabpanel"
-			hidden={value !== index}
-			id={`simple-tabpanel-${index}`}
-			aria-labelledby={`simple-tab-${index}`}
-			{...other}
-		>
-			{value === index && (
-				<Box sx={{ p: 3 }}>
-					<Typography>{children}</Typography>
-				</Box>
-			)}
-		</div>
-	);
-}
-
-function a11yProps(index) {
-	return {
-		id: `simple-tab-${index}`,
-		"aria-controls": `simple-tabpanel-${index}`,
-	};
-}
+import { TabPanel, a11yProps } from "./playground.tabpanel";
 
 const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 	const [value, setValue] = useState(0);
@@ -42,10 +16,11 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 		setWillEditedItem(getSelectedItem(DOM, selectedItemId));
 	}, [DOM, selectedItemId]);
 
-	const handleChange = (event, newValue) => {
+	const handleTabChange = (event, newValue) => {
 		setValue(newValue);
 	};
 
+	//#region DOM MANIPULATION HELPERS
 	function isRootNode() {
 		return DOM.id === selectedItemId ? true : false;
 	}
@@ -54,9 +29,9 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 		if (tempDOM.id === selectedItemId) {
 			return tempDOM;
 		} else {
-			for (let elementIndex in tempDOM.childs) {
+			for (let elementIndex in tempDOM.children) {
 				const selectedItem = getSelectedItem(
-					tempDOM.childs[elementIndex],
+					tempDOM.children[elementIndex],
 					selectedItemId
 				);
 				if (selectedItem) return selectedItem;
@@ -66,27 +41,29 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 
 	function getParentItem(tempDOM, selectedItemId) {
 		if (
-			tempDOM.childs.findIndex((child) => child.id == selectedItemId) !== -1
+			tempDOM.children.findIndex((child) => child.id === selectedItemId) !== -1
 		) {
 			return tempDOM;
 		} else {
-			for (let elementIndex in tempDOM.childs) {
+			for (let elementIndex in tempDOM.children) {
 				const selectedItem = getParentItem(
-					tempDOM.childs[elementIndex],
+					tempDOM.children[elementIndex],
 					selectedItemId
 				);
 				if (selectedItem) return selectedItem;
 			}
 		}
 	}
+	//#endregion
 
+	//#region DOM MANIPULATION
 	function editDOM(tempDOM, editedItem) {
 		if (tempDOM.id === editedItem.id) {
 			return editedItem;
 		}
-		if (tempDOM.childs !== undefined && tempDOM.childs.length > 0) {
-			for (let i = 0; i < tempDOM.childs.length; i++) {
-				tempDOM.childs[i] = editDOM(tempDOM.childs[i], editedItem);
+		if (tempDOM.children !== undefined && tempDOM.children.length > 0) {
+			for (let i = 0; i < tempDOM.children.length; i++) {
+				tempDOM.children[i] = editDOM(tempDOM.children[i], editedItem);
 			}
 		}
 
@@ -97,7 +74,7 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 		let selectedItem = JSON.parse(
 			JSON.stringify(getSelectedItem(DOM, selectedItemId))
 		);
-		selectedItem.childs.push({
+		selectedItem.children.push({
 			id: (parseInt(window.lastID) + 1).toString(),
 			label: (parseInt(window.lastID) + 1).toString(),
 			styleAttributes: {
@@ -120,7 +97,7 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 					aspectRatio: "auto",
 				},
 			},
-			childs: [],
+			children: [],
 		});
 		window.lastID = (parseInt(window.lastID) + 1).toString();
 		const editedDOM = JSON.parse(JSON.stringify(editDOM(DOM, selectedItem)));
@@ -131,15 +108,17 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 		let parentItem = JSON.parse(
 			JSON.stringify(getParentItem(DOM, selectedItemId))
 		);
-		const childIndex = parentItem.childs.findIndex(
+		const childIndex = parentItem.children.findIndex(
 			(child) => child.id === selectedItemId
 		);
-		parentItem.childs.splice(childIndex, 1);
+		parentItem.children.splice(childIndex, 1);
 		const editedDOM = JSON.parse(JSON.stringify(editDOM(DOM, parentItem)));
 		setDOM(editedDOM);
 		setSelectedItemId("");
 	}
+	//#endregion
 
+	//#region RENDER FUNCTIONS
 	function renderNoSelectedItem() {
 		return (
 			<span className="pg-menu-no-data">
@@ -186,7 +165,7 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 					<Box sx={{ borderBottom: 1, borderColor: "divider" }}>
 						<Tabs
 							value={value}
-							onChange={handleChange}
+							onChange={handleTabChange}
 							aria-label="basic tabs example"
 						>
 							<Tab label="Flex" {...a11yProps(0)} />
@@ -243,6 +222,7 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 			</div>
 		);
 	}
+	//#endregion
 
 	return (
 		<div className="pg-menu">

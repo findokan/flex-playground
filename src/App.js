@@ -8,7 +8,7 @@ import PlaygroundPage from "./pages/playground.page/playground.page";
 import NoPage from "./pages/no.page/no.page";
 
 // Constant Imports
-import navigationBarItems from "./constants";
+import { navigationBarItems, initialPlaygroundState } from "./constants";
 
 // CSS Imports
 import "./App.css";
@@ -22,7 +22,10 @@ function App() {
 			>
 				<Route index element={<HomePage />} />
 				<Route path="docs" element={<DocumentationPage />} />
-				<Route path="playground" element={<PlaygroundPage />} />
+				<Route
+					path="playground"
+					element={<PlaygroundPage initialState={initialPlaygroundState} />}
+				/>
 				<Route path="*" element={<NoPage />} />
 			</Route>
 		</Routes>

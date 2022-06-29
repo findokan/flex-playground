@@ -1,3 +1,4 @@
+/* MAIN COMPONENTS CSS START */
 html {
 	height: 100%;
 	font-family: sans-serif;
@@ -14,7 +15,9 @@ body {
 	flex-direction: column;
 	height: 100%;
 }
+/* MAIN COMPONENTS CSS END */
 
+/* NAVIGATION BAR MENU CSS START */
 .menu-item-container {
 	display: flex;
 	flex-direction: row;
@@ -41,7 +44,9 @@ body {
 .menu-item-container .selected {
 	color: #1a6891;
 }
+/* NAVIGATION BAR MENU CSS END */
 
+/* PLAYGROUND PAGE CSS START */
 .pg-container {
 	flex: 1 1 auto;
 	background-color: #f5f5f5;
@@ -114,7 +119,7 @@ body {
 	margin: 15px 50px;
 	box-shadow: 3px 3px 15px rgb(0 0 0 / 15%);
 	font-weight: 300;
-	font-size: 16px;
+	font-size: 14px;
 	display: flex;
 	flex-direction: column;
 }
@@ -144,7 +149,6 @@ body {
 
 .pg-menu .pg-menu-box {
 	border-top: 1px solid #dadada;
-	padding: 15px 10px;
 	min-height: 150px;
 	display: flex;
 	justify-content: center;
@@ -162,3 +166,4 @@ body {
 	display: flex;
 	flex-direction: row;
 }
+/* NAVIGATION BAR MENU CSS END */

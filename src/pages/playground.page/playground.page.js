@@ -1,87 +1,17 @@
 import { useEffect, useState } from "react";
-import PGRecursiveItem from "./playground.recursive.item";
-import PGMenu from "./playground.menu";
+import PGRecursiveItem from "./playground.components/playground.recursive.item";
+import PGMenu from "./playground.components/playground.menu";
 
-const PlaygroundPage = () => {
-	const [pgState, setPGState] = useState({
-		id: "pgRoot",
-		label: "root",
-		styleAttributes: {
-			flex: {
-				direction: "ltr",
-				flexDirection: "row",
-				basis: "auto",
-				grow: 0,
-				shrink: 1,
-				flexWrap: "no-wrap",
-			},
-			alignment: {},
-			layout: {
-				width: 500,
-				height: 500,
-				maxWidth: null,
-				maxHeight: null,
-				minWidth: null,
-				minHeight: null,
-				aspectRatio: "auto",
-			},
-		},
-		childs: [
-			{
-				id: "1",
-				label: "1",
-				styleAttributes: {
-					flex: {
-						direction: "ltr",
-						flexDirection: "row",
-						basis: "auto",
-						grow: 0,
-						shrink: 1,
-						flexWrap: "no-wrap",
-					},
-					alignment: {},
-					layout: {
-						width: 100,
-						height: 100,
-						maxWidth: null,
-						maxHeight: null,
-						minWidth: null,
-						minHeight: null,
-						aspectRatio: "auto",
-					},
-				},
-				childs: [],
-			},
-			{
-				id: "2",
-				label: "2",
-				styleAttributes: {
-					flex: {
-						direction: "ltr",
-						flexDirection: "row",
-						basis: "auto",
-						grow: 0,
-						shrink: 1,
-						flexWrap: "no-wrap",
-					},
-					alignment: {},
-					layout: {
-						width: 100,
-						height: 100,
-						maxWidth: null,
-						maxHeight: null,
-						minWidth: null,
-						minHeight: null,
-						aspectRatio: "auto",
-					},
-				},
-				childs: [],
-			},
-		],
-	});
+const PlaygroundPage = ({ initialState }) => {
+	// pgState works as DOM (Document Object Model). It's have data structure base on tree.
+	// There is one root element and has relationg as parent-child with other nodes.
+	const [pgState, setPGState] = useState(initialState);
+
+	// State that stores id of which user clicked/selected a node.
 	const [selectedItemId, setSelectedItemId] = useState("");
 
 	useEffect(() => {
+		// When the component mounts, initializes the last used id because of we have two child node.
 		window.lastID = "2";
 	}, []);
 
@@ -89,6 +19,7 @@ const PlaygroundPage = () => {
 		<div
 			className="pg-container"
 			onClick={(e) => {
+				// Stop propagation for getting top object for overlapped nodes
 				e.stopPropagation();
 				setSelectedItemId("");
 			}}

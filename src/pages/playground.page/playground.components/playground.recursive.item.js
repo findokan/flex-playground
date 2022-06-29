@@ -1,4 +1,7 @@
 const PGRecursiveItem = ({ item, setSelectedItemId, selectedItemId }) => {
+	// Item that generates the whole expected object according to DOM. Works with
+	// recursive logic for generating the child nodes.
+
 	function calculateClass() {
 		var baseClass = "pg-base-item";
 		if (item.id === selectedItemId) {
@@ -6,6 +9,7 @@ const PGRecursiveItem = ({ item, setSelectedItemId, selectedItemId }) => {
 		}
 		return baseClass;
 	}
+
 	return (
 		<div
 			id={item.id}
@@ -23,7 +27,7 @@ const PGRecursiveItem = ({ item, setSelectedItemId, selectedItemId }) => {
 				setSelectedItemId(item.id);
 			}}
 		>
-			{item.childs.map((child) => {
+			{item.children.map((child) => {
 				return (
 					<PGRecursiveItem
 						item={child}
