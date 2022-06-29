@@ -15,6 +15,29 @@ body {
 	flex-direction: column;
 	height: 100%;
 }
+
+.full-width {
+	width: 100%;
+}
+
+.space-from-top {
+	margin-top: 20px;
+}
+
+.order-side-by-side {
+	display: flex;
+	justify-content: space-between;
+}
+
+.set-center {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.give-space-horizontal {
+	margin: 0 15px;
+}
 /* MAIN COMPONENTS CSS END */
 
 /* NAVIGATION BAR MENU CSS START */
@@ -92,6 +115,8 @@ body {
 	border: 1px solid #989898;
 	background-repeat: no-repeat;
 	background-position: center center;
+	transform: scale(1);
+	transition: all 0.2s;
 }
 
 .pg-selected-item {
@@ -128,11 +153,15 @@ body {
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
+	width: 85%;
+	padding: 5px 20px;
 }
 
 .pg-menu-add-rm-area button {
 	margin: 5px;
 	text-transform: none;
+	flex: 1;
+	font-size: 12px;
 }
 
 .pg-menu .pg-menu-share {
@@ -151,6 +180,7 @@ body {
 	border-top: 1px solid #dadada;
 	min-height: 150px;
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 }
@@ -166,4 +196,22 @@ body {
 	display: flex;
 	flex-direction: row;
 }
+
+.pg-menu-tab-container {
+	border-bottom: 1px solid #dadada;
+	display: flex;
+	justify-content: center;
+}
+
+.pg-menu-tab-box {
+	display: flex;
+	justify-content: space-between;
+}
+
+.pg-menu-tab-panel {
+	max-height: 25vh;
+	min-height: 320px;
+	overflow-x: auto;
+}
+
 /* NAVIGATION BAR MENU CSS END */

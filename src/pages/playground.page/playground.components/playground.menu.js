@@ -4,7 +4,15 @@ import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { Button, TextField } from "@mui/material";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
 import { TabPanel, a11yProps } from "./playground.tabpanel";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
 const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 	const [value, setValue] = useState(0);
@@ -138,7 +146,8 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 							addChildNodeToSelectedItem();
 						}}
 					>
-						add child node
+						<AddCircleOutlineIcon style={{ fontSize: "16px" }} />
+						&nbsp; add child node
 					</Button>
 					<Button
 						variant="outlined"
@@ -148,80 +157,223 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 							deleteNode();
 						}}
 					>
-						delete node
+						<HighlightOffIcon style={{ fontSize: "16px" }} />
+						&nbsp; delete node
 					</Button>
 				</div>
 			);
 		}
 
 		return (
-			<div>
+			<>
 				<Box
-					sx={{ width: "100%" }}
+					className="full-width"
 					onClick={(e) => {
 						e.stopPropagation();
 					}}
 				>
-					<Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+					<Box className="pg-menu-tab-container">
 						<Tabs
+							className="pg-menu-tab-box"
 							value={value}
 							onChange={handleTabChange}
-							aria-label="basic tabs example"
 						>
-							<Tab label="Flex" {...a11yProps(0)} />
-							<Tab label="Alignment" {...a11yProps(1)} />
-							<Tab label="Layout" {...a11yProps(2)} />
+							<Tab
+								className="pg-menu-tab-item"
+								style={{ textTransform: "none" }}
+								label="Flex"
+								{...a11yProps(0)}
+							/>
+							<Tab
+								style={{ textTransform: "none" }}
+								label="Alignment"
+								{...a11yProps(1)}
+							/>
+							<Tab
+								style={{ textTransform: "none" }}
+								label="Layout"
+								{...a11yProps(2)}
+							/>
 						</Tabs>
 					</Box>
-					<TabPanel value={value} index={0}>
-						Flex
+					<TabPanel className="pg-menu-tab-panel" value={value} index={0}>
+						{renderFlexArea()}
 					</TabPanel>
-					<TabPanel value={value} index={1}>
-						Alignment
+					<TabPanel className="pg-menu-tab-panel" value={value} index={1}>
+						{renderAlignmentArea()}
 					</TabPanel>
-					<TabPanel value={value} index={2}>
-						<Typography>Width x Height</Typography>
-						<div className="pg-menu-input-aligner">
-							<TextField
-								value={willEditedItem?.styleAttributes?.layout.width}
-								onChange={(e) => {
-									if (e.target.value.length === 0) {
-										e.target.value = "0";
-									}
-									let clonedItem = JSON.parse(JSON.stringify(willEditedItem));
-									clonedItem.styleAttributes.layout.width = parseInt(
-										e.target.value
-									);
-									const editedDOM = JSON.parse(
-										JSON.stringify(editDOM(DOM, clonedItem))
-									);
-									setDOM(editedDOM);
-								}}
-							/>
-							<TextField
-								value={willEditedItem?.styleAttributes?.layout.height}
-								onChange={(e) => {
-									debugger;
-									if (e.target.value.length === 0) {
-										e.target.value = "0";
-									}
-									let clonedItem = JSON.parse(JSON.stringify(willEditedItem));
-									clonedItem.styleAttributes.layout.height = parseInt(
-										e.target.value
-									);
-									const editedDOM = JSON.parse(
-										JSON.stringify(editDOM(DOM, clonedItem))
-									);
-									setDOM(editedDOM);
-								}}
-							/>
-						</div>
+					<TabPanel className="pg-menu-tab-panel" value={value} index={2}>
+						{renderLayoutArea()}
 					</TabPanel>
 				</Box>
 				{renderAddRMNodeButtons()}
+			</>
+		);
+	}
+
+	//#region MENU TAB PANEL RENDERS
+	function renderFlexArea() {
+		return (
+			<div style={{ color: "#444950", fontSize: "12px", fontWeight: 800 }}>
+				<div>
+					<div>DIRECTION</div>
+					<div>
+						<ToggleButtonGroup
+							color="primary"
+							value={willEditedItem?.styleAttributes?.flex.direction}
+							exclusive
+							fullWidth
+						>
+							<ToggleButton
+								sx={{ padding: "3px 0", textTransform: "none" }}
+								value="inherit"
+							>
+								inherit
+							</ToggleButton>
+							<ToggleButton
+								sx={{ padding: "3px 0", textTransform: "none" }}
+								value="ltr"
+							>
+								ltr
+							</ToggleButton>
+							<ToggleButton
+								sx={{ padding: "3px 0", textTransform: "none" }}
+								value="rtl"
+							>
+								rtl
+							</ToggleButton>
+						</ToggleButtonGroup>
+					</div>
+				</div>
+				<div className="space-from-top">
+					<div>FLEX DIRECTION</div>
+					<div>
+						<FormControl fullWidth>
+							<Select
+								size="small"
+								value={willEditedItem?.styleAttributes?.flex?.flexDirection}
+							>
+								<option value={"column"}>column</option>
+								<option value={"column-reverse"}>column-reverse</option>
+								<option value={"row"}>row</option>
+								<option value={"row-reverse"}>row-reverse</option>
+							</Select>
+						</FormControl>
+					</div>
+				</div>
+				<div className="space-from-top order-side-by-side">
+					<div className="set-center">
+						<div>BASIS</div>
+						<div>
+							<TextField
+								size="small"
+								disabled={isRootNode()}
+								value={willEditedItem?.styleAttributes?.flex?.basis}
+							/>
+						</div>
+					</div>
+					<div className="set-center give-space-horizontal">
+						<div>GROW</div>
+						<div>
+							<TextField
+								size="small"
+								disabled={isRootNode()}
+								value={willEditedItem?.styleAttributes?.flex?.grow}
+							/>
+						</div>
+					</div>
+					<div className="set-center">
+						<div>SHRINK</div>
+						<div>
+							<TextField
+								size="small"
+								disabled={isRootNode()}
+								value={willEditedItem?.styleAttributes?.flex?.shrink}
+							/>
+						</div>
+					</div>
+				</div>
+				<div className="space-from-top">
+					<div>FLEX WRAP</div>
+					<div>
+						<ToggleButtonGroup
+							color="primary"
+							value={willEditedItem?.styleAttributes?.flex.flexWrap}
+							exclusive
+							fullWidth
+						>
+							<ToggleButton
+								sx={{ padding: "3px 0", textTransform: "none" }}
+								value="no-wrap"
+							>
+								no wrap
+							</ToggleButton>
+							<ToggleButton
+								sx={{ padding: "3px 0", textTransform: "none" }}
+								value="wrap"
+							>
+								wrap
+							</ToggleButton>
+							<ToggleButton
+								sx={{ padding: "3px 0", textTransform: "none" }}
+								value="wrap-reverse"
+							>
+								wrap reverse
+							</ToggleButton>
+						</ToggleButtonGroup>
+					</div>
+				</div>
 			</div>
 		);
 	}
+
+	function renderAlignmentArea() {
+		return <div>Alignment</div>;
+	}
+
+	function renderLayoutArea() {
+		return (
+			<>
+				<Typography>Width x Height</Typography>
+				<div className="pg-menu-input-aligner">
+					<TextField
+						value={willEditedItem?.styleAttributes?.layout.width}
+						onChange={(e) => {
+							if (e.target.value.length === 0) {
+								e.target.value = "0";
+							}
+							let clonedItem = JSON.parse(JSON.stringify(willEditedItem));
+							clonedItem.styleAttributes.layout.width = parseInt(
+								e.target.value
+							);
+							const editedDOM = JSON.parse(
+								JSON.stringify(editDOM(DOM, clonedItem))
+							);
+							setDOM(editedDOM);
+						}}
+					/>
+					<TextField
+						value={willEditedItem?.styleAttributes?.layout.height}
+						onChange={(e) => {
+							if (e.target.value.length === 0) {
+								e.target.value = "0";
+							}
+							let clonedItem = JSON.parse(JSON.stringify(willEditedItem));
+							clonedItem.styleAttributes.layout.height = parseInt(
+								e.target.value
+							);
+							const editedDOM = JSON.parse(
+								JSON.stringify(editDOM(DOM, clonedItem))
+							);
+							setDOM(editedDOM);
+						}}
+					/>
+				</div>
+			</>
+		);
+	}
+	//#endregion
+
 	//#endregion
 
 	return (
