@@ -192,6 +192,12 @@ body {
 	text-align: center;
 }
 
+.pg-menu-tabpanel {
+	color: #444950;
+	font-size: 12px;
+	font-weight: 800;
+}
+
 .pg-menu-input-aligner {
 	display: flex;
 	flex-direction: row;

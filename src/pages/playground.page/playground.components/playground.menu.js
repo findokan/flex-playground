@@ -213,8 +213,9 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 
 	//#region MENU TAB PANEL RENDERS
 	function renderFlexArea() {
+		console.log("renderFlexArea", willEditedItem);
 		return (
-			<div style={{ color: "#444950", fontSize: "12px", fontWeight: 800 }}>
+			<div className="pg-menu-tabpanel">
 				<div>
 					<div>DIRECTION</div>
 					<div>
@@ -251,12 +252,14 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 						<FormControl fullWidth>
 							<Select
 								size="small"
-								value={willEditedItem?.styleAttributes?.flex?.flexDirection}
+								value={
+									willEditedItem?.styleAttributes.flex.flexDirection || "column"
+								}
 							>
-								<option value={"column"}>column</option>
-								<option value={"column-reverse"}>column-reverse</option>
-								<option value={"row"}>row</option>
-								<option value={"row-reverse"}>row-reverse</option>
+								<MenuItem value={"column"}>column</MenuItem>
+								<MenuItem value={"column-reverse"}>column-reverse</MenuItem>
+								<MenuItem value={"row"}>row</MenuItem>
+								<MenuItem value={"row-reverse"}>row-reverse</MenuItem>
 							</Select>
 						</FormControl>
 					</div>
@@ -328,48 +331,187 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 	}
 
 	function renderAlignmentArea() {
-		return <div>Alignment</div>;
+		return (
+			<div className="pg-menu-tabpanel">
+				<div>
+					<div>JUSTIFY CONTENT</div>
+					<div>
+						<FormControl fullWidth>
+							<Select
+								size="small"
+								value={
+									willEditedItem?.styleAttributes.alignment.justifyContent ||
+									"flex-start"
+								}
+							>
+								<MenuItem value={"flex-start"}>flex start</MenuItem>
+								<MenuItem value={"center"}>center</MenuItem>
+								<MenuItem value={"flex-end"}>flex end</MenuItem>
+								<MenuItem value={"space-between"}>space between</MenuItem>
+								<MenuItem value={"space-around"}>space around</MenuItem>
+								<MenuItem value={"space-evenly"}>space evenly</MenuItem>
+							</Select>
+						</FormControl>
+					</div>
+				</div>
+				<div className="space-from-top">
+					<div>ALIGN ITEMS</div>
+					<div>
+						<FormControl fullWidth>
+							<Select
+								size="small"
+								value={
+									willEditedItem?.styleAttributes.alignment.alignItems || "auto"
+								}
+							>
+								<MenuItem value={"auto"}>auto</MenuItem>
+								<MenuItem value={"flex-start"}>flex start</MenuItem>
+								<MenuItem value={"center"}>center</MenuItem>
+								<MenuItem value={"flex-end"}>flex end</MenuItem>
+								<MenuItem value={"stretch"}>stretch</MenuItem>
+								<MenuItem value={"baseling"}>baseline</MenuItem>
+								<MenuItem value={"space-between"}>space between</MenuItem> 
+								<MenuItem value={"space-around"}>space around</MenuItem>
+							</Select>
+						</FormControl>
+					</div>
+				</div>
+				<div className="space-from-top">
+					<div>ALIGN SELF</div>
+					<div>
+						<FormControl fullWidth>
+							<Select
+								size="small"
+								disabled={isRootNode()}
+								value={
+									willEditedItem?.styleAttributes.alignment.alignSelf || "auto"
+								}
+							>
+								<MenuItem value={"auto"}>auto</MenuItem>
+								<MenuItem value={"flex-start"}>flex start</MenuItem>
+								<MenuItem value={"center"}>center</MenuItem>
+								<MenuItem value={"flex-end"}>flex end</MenuItem>
+								<MenuItem value={"stretch"}>stretch</MenuItem>
+								<MenuItem value={"baseling"}>baseline</MenuItem>
+								<MenuItem value={"space-between"}>space between</MenuItem> 
+								<MenuItem value={"space-around"}>space around</MenuItem>
+							</Select>
+						</FormControl>
+					</div>
+				</div>
+				<div className="space-from-top">
+					<div>ALIGN CONTENT</div>
+					<div>
+						<FormControl fullWidth>
+							<Select
+								size="small"
+								value={
+									willEditedItem?.styleAttributes.alignment.alignContent ||
+									"auto"
+								}
+							>
+								<MenuItem value={"auto"}>auto</MenuItem>
+								<MenuItem value={"flex-start"}>flex start</MenuItem>
+								<MenuItem value={"center"}>center</MenuItem>
+								<MenuItem value={"flex-end"}>flex end</MenuItem>
+								<MenuItem value={"stretch"}>stretch</MenuItem>
+								<MenuItem value={"baseling"}>baseline</MenuItem>
+								<MenuItem value={"space-between"}>space between</MenuItem> 
+								<MenuItem value={"space-around"}>space around</MenuItem>
+							</Select>
+						</FormControl>
+					</div>
+				</div>
+			</div>
+		);
 	}
 
 	function renderLayoutArea() {
 		return (
-			<>
-				<Typography>Width x Height</Typography>
-				<div className="pg-menu-input-aligner">
-					<TextField
-						value={willEditedItem?.styleAttributes?.layout.width}
-						onChange={(e) => {
-							if (e.target.value.length === 0) {
-								e.target.value = "0";
-							}
-							let clonedItem = JSON.parse(JSON.stringify(willEditedItem));
-							clonedItem.styleAttributes.layout.width = parseInt(
-								e.target.value
-							);
-							const editedDOM = JSON.parse(
-								JSON.stringify(editDOM(DOM, clonedItem))
-							);
-							setDOM(editedDOM);
-						}}
-					/>
-					<TextField
-						value={willEditedItem?.styleAttributes?.layout.height}
-						onChange={(e) => {
-							if (e.target.value.length === 0) {
-								e.target.value = "0";
-							}
-							let clonedItem = JSON.parse(JSON.stringify(willEditedItem));
-							clonedItem.styleAttributes.layout.height = parseInt(
-								e.target.value
-							);
-							const editedDOM = JSON.parse(
-								JSON.stringify(editDOM(DOM, clonedItem))
-							);
-							setDOM(editedDOM);
-						}}
-					/>
+			<div className="pg-menu-tabpanel">
+				<div>
+					<div>WIDTH&nbsp;x&nbsp;HEIGHT</div>
+					<div className="pg-menu-input-aligner">
+						<TextField
+							value={willEditedItem?.styleAttributes?.layout.width}
+							size="small"
+							style={{ marginRight: "15px" }}
+							onChange={(e) => {
+								if (e.target.value.length === 0) {
+									e.target.value = "0";
+								}
+								let clonedItem = JSON.parse(JSON.stringify(willEditedItem));
+								clonedItem.styleAttributes.layout.width = parseInt(
+									e.target.value
+								);
+								const editedDOM = JSON.parse(
+									JSON.stringify(editDOM(DOM, clonedItem))
+								);
+								setDOM(editedDOM);
+							}}
+						/>
+						<TextField
+							value={willEditedItem?.styleAttributes?.layout.height}
+							size="small"
+							onChange={(e) => {
+								if (e.target.value.length === 0) {
+									e.target.value = "0";
+								}
+								let clonedItem = JSON.parse(JSON.stringify(willEditedItem));
+								clonedItem.styleAttributes.layout.height = parseInt(
+									e.target.value
+								);
+								const editedDOM = JSON.parse(
+									JSON.stringify(editDOM(DOM, clonedItem))
+								);
+								setDOM(editedDOM);
+							}}
+						/>
+					</div>
 				</div>
-			</>
+				<div className="space-from-top">
+					<div>MAX-WIDTH&nbsp;x&nbsp;MAX-HEIGHT</div>
+					<div className="pg-menu-input-aligner">
+						<TextField
+							value={willEditedItem?.styleAttributes?.layout.maxWidth}
+							size="small"
+							placeholder="none"
+							style={{ marginRight: "15px" }}
+							onChange={(e) => {
+								if (e.target.value.length === 0) {
+									e.target.value = null;
+								}
+								let clonedItem = JSON.parse(JSON.stringify(willEditedItem));
+								clonedItem.styleAttributes.layout.maxWidth = parseInt(
+									e.target.value
+								);
+								const editedDOM = JSON.parse(
+									JSON.stringify(editDOM(DOM, clonedItem))
+								);
+								setDOM(editedDOM);
+							}}
+						/>
+						<TextField
+							value={willEditedItem?.styleAttributes?.layout.maxHeight}
+							size="small"
+							placeholder="none"
+							onChange={(e) => {
+								if (e.target.value.length === 0) {
+									e.target.value = null;
+								}
+								let clonedItem = JSON.parse(JSON.stringify(willEditedItem));
+								clonedItem.styleAttributes.layout.maxHeight = parseInt(
+									e.target.value
+								);
+								const editedDOM = JSON.parse(
+									JSON.stringify(editDOM(DOM, clonedItem))
+								);
+								setDOM(editedDOM);
+							}}
+						/>
+					</div>
+				</div>
+			</div>
 		);
 	}
 	//#endregion
