@@ -35,6 +35,13 @@ body {
 	align-items: center;
 }
 
+.set-center-vertical {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}
+
 .give-space-horizontal {
 	margin: 0 15px;
 }
@@ -192,7 +199,7 @@ body {
 	text-align: center;
 }
 
-.pg-menu-tabpanel {
+.pg-menu-tab-style {
 	color: #444950;
 	font-size: 12px;
 	font-weight: 800;

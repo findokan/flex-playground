@@ -62,6 +62,22 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 			}
 		}
 	}
+
+	function updateStyleAttribute(
+		parentTitle,
+		attribute,
+		value,
+		convertToInt = true
+	) {
+		if (!isNaN(value) && convertToInt) {
+			value = parseInt(value);
+		}
+
+		let clonedItem = JSON.parse(JSON.stringify(willEditedItem));
+		clonedItem.styleAttributes[parentTitle][attribute] = value;
+		const editedDOM = JSON.parse(JSON.stringify(editDOM(DOM, clonedItem)));
+		setDOM(editedDOM);
+	}
 	//#endregion
 
 	//#region DOM MANIPULATION
@@ -215,7 +231,7 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 	function renderFlexArea() {
 		console.log("renderFlexArea", willEditedItem);
 		return (
-			<div className="pg-menu-tabpanel">
+			<div className="pg-menu-tab-style">
 				<div>
 					<div>DIRECTION</div>
 					<div>
@@ -224,6 +240,9 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 							value={willEditedItem?.styleAttributes?.flex.direction}
 							exclusive
 							fullWidth
+							onChange={(e) =>
+								updateStyleAttribute("flex", "direction", e.target.value)
+							}
 						>
 							<ToggleButton
 								sx={{ padding: "3px 0", textTransform: "none" }}
@@ -255,6 +274,9 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 								value={
 									willEditedItem?.styleAttributes.flex.flexDirection || "column"
 								}
+								onChange={(e) =>
+									updateStyleAttribute("flex", "flexDirection", e.target.value)
+								}
 							>
 								<MenuItem value={"column"}>column</MenuItem>
 								<MenuItem value={"column-reverse"}>column-reverse</MenuItem>
@@ -272,6 +294,10 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 								size="small"
 								disabled={isRootNode()}
 								value={willEditedItem?.styleAttributes?.flex?.basis}
+								placeholder="auto"
+								onChange={(e) =>
+									updateStyleAttribute("flex", "basis", e.target.value)
+								}
 							/>
 						</div>
 					</div>
@@ -282,6 +308,10 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 								size="small"
 								disabled={isRootNode()}
 								value={willEditedItem?.styleAttributes?.flex?.grow}
+								placeholder="0"
+								onChange={(e) =>
+									updateStyleAttribute("flex", "grow", e.target.value)
+								}
 							/>
 						</div>
 					</div>
@@ -292,6 +322,10 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 								size="small"
 								disabled={isRootNode()}
 								value={willEditedItem?.styleAttributes?.flex?.shrink}
+								placeholder="1"
+								onChange={(e) =>
+									updateStyleAttribute("flex", "shrink", e.target.value)
+								}
 							/>
 						</div>
 					</div>
@@ -304,10 +338,13 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 							value={willEditedItem?.styleAttributes?.flex.flexWrap}
 							exclusive
 							fullWidth
+							onChange={(e) =>
+								updateStyleAttribute("flex", "flexWrap", e.target.value)
+							}
 						>
 							<ToggleButton
 								sx={{ padding: "3px 0", textTransform: "none" }}
-								value="no-wrap"
+								value="nowrap"
 							>
 								no wrap
 							</ToggleButton>
@@ -332,7 +369,7 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 
 	function renderAlignmentArea() {
 		return (
-			<div className="pg-menu-tabpanel">
+			<div className="pg-menu-tab-style">
 				<div>
 					<div>JUSTIFY CONTENT</div>
 					<div>
@@ -342,6 +379,13 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 								value={
 									willEditedItem?.styleAttributes.alignment.justifyContent ||
 									"flex-start"
+								}
+								onChange={(e) =>
+									updateStyleAttribute(
+										"alignment",
+										"justifyContent",
+										e.target.value
+									)
 								}
 							>
 								<MenuItem value={"flex-start"}>flex start</MenuItem>
@@ -362,6 +406,13 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 								size="small"
 								value={
 									willEditedItem?.styleAttributes.alignment.alignItems || "auto"
+								}
+								onChange={(e) =>
+									updateStyleAttribute(
+										"alignment",
+										"alignItems",
+										e.target.value
+									)
 								}
 							>
 								<MenuItem value={"auto"}>auto</MenuItem>
@@ -386,6 +437,9 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 								value={
 									willEditedItem?.styleAttributes.alignment.alignSelf || "auto"
 								}
+								onChange={(e) =>
+									updateStyleAttribute("alignment", "alignSelf", e.target.value)
+								}
 							>
 								<MenuItem value={"auto"}>auto</MenuItem>
 								<MenuItem value={"flex-start"}>flex start</MenuItem>
@@ -409,6 +463,13 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 									willEditedItem?.styleAttributes.alignment.alignContent ||
 									"auto"
 								}
+								onChange={(e) =>
+									updateStyleAttribute(
+										"alignment",
+										"alignContent",
+										e.target.value
+									)
+								}
 							>
 								<MenuItem value={"auto"}>auto</MenuItem>
 								<MenuItem value={"flex-start"}>flex start</MenuItem>
@@ -428,7 +489,7 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 
 	function renderLayoutArea() {
 		return (
-			<div className="pg-menu-tabpanel">
+			<div className="pg-menu-tab-style">
 				<div>
 					<div>WIDTH&nbsp;x&nbsp;HEIGHT</div>
 					<div className="pg-menu-input-aligner">
@@ -436,36 +497,16 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 							value={willEditedItem?.styleAttributes?.layout.width}
 							size="small"
 							style={{ marginRight: "15px" }}
-							onChange={(e) => {
-								if (e.target.value.length === 0) {
-									e.target.value = "0";
-								}
-								let clonedItem = JSON.parse(JSON.stringify(willEditedItem));
-								clonedItem.styleAttributes.layout.width = parseInt(
-									e.target.value
-								);
-								const editedDOM = JSON.parse(
-									JSON.stringify(editDOM(DOM, clonedItem))
-								);
-								setDOM(editedDOM);
-							}}
+							onChange={(e) =>
+								updateStyleAttribute("layout", "width", e.target.value)
+							}
 						/>
 						<TextField
 							value={willEditedItem?.styleAttributes?.layout.height}
 							size="small"
-							onChange={(e) => {
-								if (e.target.value.length === 0) {
-									e.target.value = "0";
-								}
-								let clonedItem = JSON.parse(JSON.stringify(willEditedItem));
-								clonedItem.styleAttributes.layout.height = parseInt(
-									e.target.value
-								);
-								const editedDOM = JSON.parse(
-									JSON.stringify(editDOM(DOM, clonedItem))
-								);
-								setDOM(editedDOM);
-							}}
+							onChange={(e) =>
+								updateStyleAttribute("layout", "height", e.target.value)
+							}
 						/>
 					</div>
 				</div>
@@ -477,37 +518,217 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 							size="small"
 							placeholder="none"
 							style={{ marginRight: "15px" }}
-							onChange={(e) => {
-								if (e.target.value.length === 0) {
-									e.target.value = null;
-								}
-								let clonedItem = JSON.parse(JSON.stringify(willEditedItem));
-								clonedItem.styleAttributes.layout.maxWidth = parseInt(
-									e.target.value
-								);
-								const editedDOM = JSON.parse(
-									JSON.stringify(editDOM(DOM, clonedItem))
-								);
-								setDOM(editedDOM);
-							}}
+							onChange={(e) =>
+								updateStyleAttribute("layout", "maxWidth", e.target.value)
+							}
 						/>
 						<TextField
 							value={willEditedItem?.styleAttributes?.layout.maxHeight}
 							size="small"
 							placeholder="none"
-							onChange={(e) => {
-								if (e.target.value.length === 0) {
-									e.target.value = null;
-								}
-								let clonedItem = JSON.parse(JSON.stringify(willEditedItem));
-								clonedItem.styleAttributes.layout.maxHeight = parseInt(
-									e.target.value
-								);
-								const editedDOM = JSON.parse(
-									JSON.stringify(editDOM(DOM, clonedItem))
-								);
-								setDOM(editedDOM);
-							}}
+							onChange={(e) =>
+								updateStyleAttribute("layout", "maxHeight", e.target.value)
+							}
+						/>
+					</div>
+				</div>
+				<div className="space-from-top">
+					<div>MIN-WIDTH&nbsp;x&nbsp;MIN-HEIGHT</div>
+					<div className="pg-menu-input-aligner">
+						<TextField
+							value={willEditedItem?.styleAttributes?.layout.minWidth}
+							size="small"
+							placeholder="0"
+							style={{ marginRight: "15px" }}
+							onChange={(e) =>
+								updateStyleAttribute("layout", "minWidth", e.target.value)
+							}
+						/>
+						<TextField
+							value={willEditedItem?.styleAttributes?.layout.minHeight}
+							size="small"
+							placeholder="0"
+							onChange={(e) =>
+								updateStyleAttribute("layout", "minHeight", e.target.value)
+							}
+						/>
+					</div>
+				</div>
+				<div className="space-from-top">
+					<div>ASPECT RATIO</div>
+					<div className="pg-menu-input-aligner">
+						<TextField
+							value={willEditedItem?.styleAttributes?.layout.aspectRatio}
+							size="small"
+							fullWidth
+							placeholder="auto"
+							onChange={(e) =>
+								updateStyleAttribute(
+									"layout",
+									"aspectRatio",
+									e.target.value,
+									false
+								)
+							}
+						/>
+					</div>
+				</div>
+				<div className="space-from-top set-center">
+					<div>
+						<TextField
+							value={willEditedItem?.styleAttributes?.layout.paddingTop}
+							size="small"
+							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
+							onChange={(e) =>
+								updateStyleAttribute("layout", "paddingTop", e.target.value)
+							}
+						/>
+					</div>
+					<div className="order-side-by-side set-center-vertical">
+						<TextField
+							value={willEditedItem?.styleAttributes?.layout.paddingLeft}
+							size="small"
+							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
+							onChange={(e) =>
+								updateStyleAttribute("layout", "paddingLeft", e.target.value)
+							}
+						/>
+						<span className="give-space-horizontal">PADDING</span>
+						<TextField
+							value={willEditedItem?.styleAttributes?.layout.paddingRight}
+							size="small"
+							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
+							onChange={(e) =>
+								updateStyleAttribute("layout", "paddingRight", e.target.value)
+							}
+						/>
+					</div>
+					<div>
+						<TextField
+							value={willEditedItem?.styleAttributes?.layout.paddingBottom}
+							size="small"
+							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
+							onChange={(e) =>
+								updateStyleAttribute("layout", "paddingBottom", e.target.value)
+							}
+						/>
+					</div>
+				</div>
+				<div className="space-from-top set-center">
+					<div>
+						<TextField
+							value={willEditedItem?.styleAttributes?.layout.marginTop}
+							disabled={isRootNode()}
+							size="small"
+							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
+							onChange={(e) =>
+								updateStyleAttribute("layout", "marginTop", e.target.value)
+							}
+						/>
+					</div>
+					<div className="order-side-by-side set-center-vertical">
+						<TextField
+							value={willEditedItem?.styleAttributes?.layout.marginLeft}
+							disabled={isRootNode()}
+							size="small"
+							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
+							onChange={(e) =>
+								updateStyleAttribute("layout", "marginLeft", e.target.value)
+							}
+						/>
+						<span className="give-space-horizontal">MARGIN</span>
+						<TextField
+							value={willEditedItem?.styleAttributes?.layout.marginRight}
+							disabled={isRootNode()}
+							size="small"
+							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
+							onChange={(e) =>
+								updateStyleAttribute("layout", "marginRight", e.target.value)
+							}
+						/>
+					</div>
+					<div>
+						<TextField
+							value={willEditedItem?.styleAttributes?.layout.marginBottom}
+							size="small"
+							disabled={isRootNode()}
+							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
+							onChange={(e) =>
+								updateStyleAttribute("layout", "marginBottom", e.target.value)
+							}
+						/>
+					</div>
+				</div>
+				<div className="space-from-top">
+					<div>POSITION TYPE</div>
+					<div>
+						<ToggleButtonGroup
+							color="primary"
+							value={willEditedItem?.styleAttributes?.layout?.positionType}
+							disabled={isRootNode()}
+							exclusive
+							fullWidth
+							onChange={(e) =>
+								updateStyleAttribute("layout", "positionType", e.target.value)
+							}
+						>
+							<ToggleButton
+								sx={{ padding: "3px 0", textTransform: "none" }}
+								value="relative"
+							>
+								relative
+							</ToggleButton>
+							<ToggleButton
+								sx={{ padding: "3px 0", textTransform: "none" }}
+								value="absolute"
+							>
+								absolute
+							</ToggleButton>
+						</ToggleButtonGroup>
+					</div>
+				</div>
+				<div className="space-from-top set-center">
+					<div>
+						<TextField
+							value={willEditedItem?.styleAttributes?.layout.top}
+							disabled={isRootNode()}
+							size="small"
+							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
+							onChange={(e) =>
+								updateStyleAttribute("layout", "top", e.target.value)
+							}
+						/>
+					</div>
+					<div className="order-side-by-side set-center-vertical">
+						<TextField
+							value={willEditedItem?.styleAttributes?.layout.left}
+							disabled={isRootNode()}
+							size="small"
+							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
+							onChange={(e) =>
+								updateStyleAttribute("layout", "left", e.target.value)
+							}
+						/>
+						<span className="give-space-horizontal">POSITION</span>
+						<TextField
+							value={willEditedItem?.styleAttributes?.layout.right}
+							disabled={isRootNode()}
+							size="small"
+							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
+							onChange={(e) =>
+								updateStyleAttribute("layout", "right", e.target.value)
+							}
+						/>
+					</div>
+					<div>
+						<TextField
+							value={willEditedItem?.styleAttributes?.layout.bottom}
+							size="small"
+							disabled={isRootNode()}
+							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
+							onChange={(e) =>
+								updateStyleAttribute("layout", "bottom", e.target.value, false)
+							}
 						/>
 					</div>
 				</div>
