@@ -97,6 +97,7 @@ body {
 	background-size: 10px 10px, 10px 10px, 100px 100px, 100px 100px, 100px 100px,
 		100px 100px, 100px 100px, 100px 100px;
 	display: flex;
+	min-height: 600px;
 }
 
 .pg-container .pg-area {
@@ -226,11 +227,134 @@ body {
 	overflow-x: auto;
 }
 
-/* NAVIGATION BAR MENU CSS END */
-
 .pg-display-problem {
 	flex: 1;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
+/* PLAYGROUND PAGE CSS END */
+
+/* HOME PAGE CSS START */
+.hp-welcome-container {
+	max-width: 1200px;
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	padding: 100px 50px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.hp-welcome-column {
+	flex: 1;
+}
+
+@media screen and (max-width: 800px) {
+	.hp-welcome-container {
+		max-width: 1200px;
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		padding: 100px 50px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+}
+
+.hp-welcome-up-title {
+	color: #bec3c9;
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 200%;
+}
+
+.hp-welcome-title {
+	color: #444950;
+	font-size: 48px;
+	font-weight: 300;
+	line-height: 110%;
+	margin-top: 12px;
+}
+
+.hp-welcome-sub-text {
+	color: #444950;
+	line-height: 180%;
+	font-size: 18px;
+	font-weight: 400;
+	margin-bottom: 1.5em;
+	margin-top: 1.5em;
+}
+
+.hp-blueprint-border {
+	border: 1px dashed #444950;
+}
+
+.hp-blueprint-container {
+	position: relative;
+	margin: auto;
+	height: 300px;
+	width: 300px;
+}
+
+@media screen and (max-width: 800px) {
+	.hp-blueprint-container {
+		position: relative;
+		margin: 20px 0;
+		height: 300px;
+		width: 300px;
+		display: flex;
+		justify-content: center;
+	}
+}
+
+.hp-blueprint-avatar {
+	position: absolute;
+	left: 15px;
+	top: 15px;
+	height: 50px;
+	width: 50px;
+}
+
+.hp-blueprint-title {
+	position: absolute;
+	left: 80px;
+	top: 20px;
+	height: 15px;
+	width: 150px;
+}
+
+.hp-blueprint-subtitle {
+	position: absolute;
+	left: 80px;
+	top: 40px;
+	height: 15px;
+	width: 80px;
+}
+
+.hp-blueprint-content {
+	position: absolute;
+	left: 15px;
+	right: 15px;
+	bottom: 15px;
+	top: 80px;
+}
+
+/* HOME PAGE CSS END */
+
+/* FOOTER CSS START */
+.footer-container {
+	padding: 20px;
+	color: #5a5a5a;
+}
+
+.footer-brand {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.footer-brand-text {
+	margin-left: 15px;
+}
+/* FOOTER CSS END */

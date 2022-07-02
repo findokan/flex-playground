@@ -101,7 +101,7 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 	}
 
 	function addChildNodeToSelectedItem() {
-		let selectedItem = loadash.cloneDeepgetSelectedItem(DOM, selectedItemId);
+		let selectedItem = loadash.cloneDeep(getSelectedItem(DOM, selectedItemId));
 		selectedItem.children.push({
 			id: (parseInt(window.lastID) + 1).toString(),
 			label: (parseInt(window.lastID) + 1).toString(),

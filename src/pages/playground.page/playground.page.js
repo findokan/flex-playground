@@ -17,8 +17,8 @@ const PlaygroundPage = ({ initialState }) => {
 
 	useEffect(() => {
 		// When the component mounts, initializes the last used id because of we have two child node.
-		window.lastID = "2";
-	}, []);
+		window.lastID = initialState.children.length.toString();
+	}, [initialState.children.length]);
 
 	return (
 		<div
