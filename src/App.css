@@ -240,7 +240,6 @@ body {
 	max-width: 1200px;
 	display: flex;
 	flex-direction: row;
-	width: 100%;
 	padding: 100px 50px;
 	margin-left: auto;
 	margin-right: auto;
@@ -255,7 +254,6 @@ body {
 		max-width: 1200px;
 		display: flex;
 		flex-direction: column;
-		width: 100%;
 		padding: 100px 50px;
 		margin-left: auto;
 		margin-right: auto;
@@ -338,6 +336,26 @@ body {
 	right: 15px;
 	bottom: 15px;
 	top: 80px;
+}
+
+.hp-list-items {
+	display: flex;
+	width: 100%;
+	justify-content: center;
+	flex-direction: row;
+}
+
+@media screen and (max-width: 970px) {
+	.hp-list-items {
+		display: flex;
+		width: 100%;
+		justify-content: center;
+		flex-wrap: wrap;
+	}
+}
+
+.hp-list-item {
+	margin: 15px;
 }
 
 /* HOME PAGE CSS END */

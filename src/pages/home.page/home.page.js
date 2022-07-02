@@ -2,8 +2,6 @@ import { useRef } from "react";
 import { Button } from "@mui/material";
 import { homePagePlaygroundState } from "../../constants";
 import PlaygroundPage from "../playground.page/playground.page";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
 
 const HomePage = () => {
 	const pgArea = useRef(null);
@@ -55,35 +53,31 @@ const HomePage = () => {
 						pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
 						culpa qui officia deserunt mollit anim id est laborum.
 					</div>
-					<div>
-						<Box sx={{ flexGrow: 1 }}>
-							<Grid container spacing={2}>
-								<Grid item xs={3}>
-									<img
-										src="https://via.placeholder.com/200"
-										alt="dummy_image"
-									/>
-								</Grid>
-								<Grid item xs={3}>
-									<img
-										src="https://via.placeholder.com/200"
-										alt="dummy_image"
-									/>
-								</Grid>
-								<Grid item xs={3}>
-									<img
-										src="https://via.placeholder.com/200"
-										alt="dummy_image"
-									/>
-								</Grid>
-								<Grid item xs={3}>
-									<img
-										src="https://via.placeholder.com/200"
-										alt="dummy_image"
-									/>
-								</Grid>
-							</Grid>
-						</Box>
+					<div className="hp-list-items">
+						<img
+							className="hp-list-item"
+							src="https://via.placeholder.com/200"
+							width={200}
+							alt="dummy_image"
+						/>
+						<img
+							className="hp-list-item"
+							src="https://via.placeholder.com/200"
+							width={200}
+							alt="dummy_image"
+						/>
+						<img
+							className="hp-list-item"
+							src="https://via.placeholder.com/200"
+							width={200}
+							alt="dummy_image"
+						/>
+						<img
+							className="hp-list-item"
+							src="https://via.placeholder.com/200"
+							width={200}
+							alt="dummy_image"
+						/>
 					</div>
 				</div>
 			</div>
