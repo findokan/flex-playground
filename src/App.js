@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 
 // Page Imports
-import Layout from "./components/layout.component";
+import Layout from "./components/layout/layout.component";
 import HomePage from "./pages/home.page/home.page";
 import DocumentationPage from "./pages/documentation.page/documentation.page";
 import PlaygroundPage from "./pages/playground.page/playground.page";

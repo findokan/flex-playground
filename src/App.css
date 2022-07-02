@@ -96,7 +96,6 @@ body {
 		linear-gradient(#e5e5e5 1px, transparent 0), #f5f5f5;
 	background-size: 10px 10px, 10px 10px, 100px 100px, 100px 100px, 100px 100px,
 		100px 100px, 100px 100px, 100px 100px;
-	border: 1px solid #989898;
 	display: flex;
 }
 
@@ -228,3 +227,10 @@ body {
 }
 
 /* NAVIGATION BAR MENU CSS END */
+
+.pg-display-problem {
+	flex: 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}

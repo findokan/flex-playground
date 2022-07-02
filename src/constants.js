@@ -93,7 +93,7 @@ const initialPlaygroundState = {
 					basis: "auto",
 					grow: 0,
 					shrink: 1,
-					flexWrap: "no-wrap",
+					flexWrap: "nowrap",
 				},
 				alignment: {
 					justifyContent: "flex-start",
@@ -140,7 +140,7 @@ const initialPlaygroundState = {
 					basis: "auto",
 					grow: 0,
 					shrink: 1,
-					flexWrap: "no-wrap",
+					flexWrap: "nowrap",
 				},
 				alignment: {
 					justifyContent: "flex-start",

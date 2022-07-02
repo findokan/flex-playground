@@ -41,10 +41,18 @@ const PGRecursiveItem = ({ item, setSelectedItemId, selectedItemId }) => {
 				marginRight: item.styleAttributes.layout.marginRight + "px",
 				marginBottom: item.styleAttributes.layout.marginBottom + "px",
 				position: item.styleAttributes.layout.positionType,
-				top: item.styleAttributes.layout.top + "px",
-				right: item.styleAttributes.layout.right + "px",
-				bottom: item.styleAttributes.layout.bottom + "px",
-				left: item.styleAttributes.layout.left + "px",
+				top: item.styleAttributes.layout.top
+					? item.styleAttributes.layout.top + "px"
+					: "unset",
+				right: item.styleAttributes.layout.right
+					? item.styleAttributes.layout.right + "px"
+					: "unset",
+				bottom: item.styleAttributes.layout.bottom
+					? item.styleAttributes.layout.bottom + "px"
+					: "unset",
+				left: item.styleAttributes.layout.left
+					? item.styleAttributes.layout.left + "px"
+					: "unset",
 				backgroundColor: "white",
 				display: "flex",
 				backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1'><text x='48%' y='50%' fill='%239a9a9a' font-size='150%' dominant-baseline='middle' text-anchor='middle'>${item.label}</text></svg>")`,

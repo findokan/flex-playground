@@ -1,39 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { Button, TextField } from "@mui/material";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import { TabPanel, a11yProps } from "./playground.tabpanel";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import loadash from "lodash";
 
 const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
-	const [value, setValue] = useState(0);
-	const [willEditedItem, setWillEditedItem] = useState(
-		getSelectedItem(DOM, selectedItemId)
-	);
+	//#region COMPONENT INITILIZATION
+	const [tabValue, setTabValue] = useState(0);
 
-	useEffect(() => {
-		setWillEditedItem(getSelectedItem(DOM, selectedItemId));
-	}, [DOM, selectedItemId]);
-
-	const handleTabChange = (event, newValue) => {
-		setValue(newValue);
-	};
-
-	//#region DOM MANIPULATION HELPERS
-	function isRootNode() {
-		return DOM.id === selectedItemId ? true : false;
-	}
-
-	function getSelectedItem(tempDOM, selectedItemId) {
+	const getSelectedItem = useCallback((tempDOM, selectedItemId) => {
 		if (tempDOM.id === selectedItemId) {
 			return tempDOM;
 		} else {
@@ -45,6 +29,26 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 				if (selectedItem) return selectedItem;
 			}
 		}
+	}, []);
+
+	const [willEditedItem, setWillEditedItem] = useState(
+		getSelectedItem(DOM, selectedItemId)
+	);
+
+	useEffect(() => {
+		setWillEditedItem(getSelectedItem(DOM, selectedItemId));
+	}, [DOM, selectedItemId, getSelectedItem]);
+	//#endregion
+
+	//#region FORM HELPERS
+	const handleTabChange = (event, newValue) => {
+		setTabValue(newValue);
+	};
+	//#endregion
+
+	//#region DOM MANIPULATION HELPERS
+	function isRootNode() {
+		return DOM.id === selectedItemId ? true : false;
 	}
 
 	function getParentItem(tempDOM, selectedItemId) {
@@ -67,15 +71,18 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 		parentTitle,
 		attribute,
 		value,
-		convertToInt = true
+		convertToInt = true,
+		defaultValue = null
 	) {
 		if (!isNaN(value) && convertToInt) {
 			value = parseInt(value);
+
+			if (isNaN(value)) value = defaultValue;
 		}
 
-		let clonedItem = JSON.parse(JSON.stringify(willEditedItem));
+		let clonedItem = loadash.cloneDeep(willEditedItem);
 		clonedItem.styleAttributes[parentTitle][attribute] = value;
-		const editedDOM = JSON.parse(JSON.stringify(editDOM(DOM, clonedItem)));
+		const editedDOM = loadash.cloneDeep(editDOM(DOM, clonedItem));
 		setDOM(editedDOM);
 	}
 	//#endregion
@@ -90,14 +97,11 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 				tempDOM.children[i] = editDOM(tempDOM.children[i], editedItem);
 			}
 		}
-
 		return tempDOM;
 	}
 
 	function addChildNodeToSelectedItem() {
-		let selectedItem = JSON.parse(
-			JSON.stringify(getSelectedItem(DOM, selectedItemId))
-		);
+		let selectedItem = loadash.cloneDeepgetSelectedItem(DOM, selectedItemId);
 		selectedItem.children.push({
 			id: (parseInt(window.lastID) + 1).toString(),
 			label: (parseInt(window.lastID) + 1).toString(),
@@ -124,19 +128,17 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 			children: [],
 		});
 		window.lastID = (parseInt(window.lastID) + 1).toString();
-		const editedDOM = JSON.parse(JSON.stringify(editDOM(DOM, selectedItem)));
+		const editedDOM = loadash.cloneDeep(editDOM(DOM, selectedItem));
 		setDOM(editedDOM);
 	}
 
 	function deleteNode() {
-		let parentItem = JSON.parse(
-			JSON.stringify(getParentItem(DOM, selectedItemId))
-		);
+		let parentItem = loadash.cloneDeep(getParentItem(DOM, selectedItemId));
 		const childIndex = parentItem.children.findIndex(
 			(child) => child.id === selectedItemId
 		);
 		parentItem.children.splice(childIndex, 1);
-		const editedDOM = JSON.parse(JSON.stringify(editDOM(DOM, parentItem)));
+		const editedDOM = loadash.cloneDeep(editDOM(DOM, parentItem));
 		setDOM(editedDOM);
 		setSelectedItemId("");
 	}
@@ -155,6 +157,7 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 		function renderAddRMNodeButtons() {
 			return (
 				<div className="pg-menu-add-rm-area">
+					{/* Add Button Start */}
 					<Button
 						variant="contained"
 						onClick={(e) => {
@@ -165,6 +168,8 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 						<AddCircleOutlineIcon style={{ fontSize: "16px" }} />
 						&nbsp; add child node
 					</Button>
+					{/* Add Button End */}
+					{/* Delete Button Start */}
 					<Button
 						variant="outlined"
 						disabled={isRootNode()}
@@ -176,6 +181,7 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 						<HighlightOffIcon style={{ fontSize: "16px" }} />
 						&nbsp; delete node
 					</Button>
+					{/* Delete Button End */}
 				</div>
 			);
 		}
@@ -188,10 +194,11 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 						e.stopPropagation();
 					}}
 				>
+					{/* Tab Container Start */}
 					<Box className="pg-menu-tab-container">
 						<Tabs
 							className="pg-menu-tab-box"
-							value={value}
+							value={tabValue}
 							onChange={handleTabChange}
 						>
 							<Tab
@@ -212,15 +219,22 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 							/>
 						</Tabs>
 					</Box>
-					<TabPanel className="pg-menu-tab-panel" value={value} index={0}>
+					{/* Tab Container End */}
+					{/* Flex Tab Start */}
+					<TabPanel className="pg-menu-tab-panel" value={tabValue} index={0}>
 						{renderFlexArea()}
 					</TabPanel>
-					<TabPanel className="pg-menu-tab-panel" value={value} index={1}>
+					{/* Flex Tab End */}
+					{/* Alignment Tab Start */}
+					<TabPanel className="pg-menu-tab-panel" value={tabValue} index={1}>
 						{renderAlignmentArea()}
 					</TabPanel>
-					<TabPanel className="pg-menu-tab-panel" value={value} index={2}>
+					{/* Alignment Tab End */}
+					{/* Layout Tab Start */}
+					<TabPanel className="pg-menu-tab-panel" value={tabValue} index={2}>
 						{renderLayoutArea()}
 					</TabPanel>
+					{/* Layout Tab End */}
 				</Box>
 				{renderAddRMNodeButtons()}
 			</>
@@ -229,9 +243,9 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 
 	//#region MENU TAB PANEL RENDERS
 	function renderFlexArea() {
-		console.log("renderFlexArea", willEditedItem);
 		return (
 			<div className="pg-menu-tab-style">
+				{/* Direction Attribute Start */}
 				<div>
 					<div>DIRECTION</div>
 					<div>
@@ -265,6 +279,8 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 						</ToggleButtonGroup>
 					</div>
 				</div>
+				{/* Direction Attribute End */}
+				{/* Flex Direction Attribute Start */}
 				<div className="space-from-top">
 					<div>FLEX DIRECTION</div>
 					<div>
@@ -286,50 +302,84 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 						</FormControl>
 					</div>
 				</div>
+				{/* Flex Direction Attribute End */}
+				{/* Flex Attribute Start */}
 				<div className="space-from-top order-side-by-side">
+					{/* Flex Basis Start */}
 					<div className="set-center">
 						<div>BASIS</div>
 						<div>
 							<TextField
 								size="small"
 								disabled={isRootNode()}
-								value={willEditedItem?.styleAttributes?.flex?.basis}
+								value={
+									willEditedItem?.styleAttributes?.flex?.basis === "auto"
+										? ""
+										: willEditedItem?.styleAttributes?.flex?.basis
+								}
 								placeholder="auto"
 								onChange={(e) =>
-									updateStyleAttribute("flex", "basis", e.target.value)
+									updateStyleAttribute(
+										"flex",
+										"basis",
+										e.target.value,
+										true,
+										"auto"
+									)
 								}
 							/>
 						</div>
 					</div>
+					{/* Flex Basis End */}
+					{/* Flex Grow Start */}
 					<div className="set-center give-space-horizontal">
 						<div>GROW</div>
 						<div>
 							<TextField
 								size="small"
 								disabled={isRootNode()}
-								value={willEditedItem?.styleAttributes?.flex?.grow}
+								value={
+									willEditedItem?.styleAttributes?.flex?.grow === 0
+										? ""
+										: willEditedItem?.styleAttributes?.flex?.grow
+								}
 								placeholder="0"
 								onChange={(e) =>
-									updateStyleAttribute("flex", "grow", e.target.value)
+									updateStyleAttribute("flex", "grow", e.target.value, true, 0)
 								}
 							/>
 						</div>
 					</div>
+					{/* Flex Grow End */}
+					{/* Flex Shrint Start */}
 					<div className="set-center">
 						<div>SHRINK</div>
 						<div>
 							<TextField
 								size="small"
 								disabled={isRootNode()}
-								value={willEditedItem?.styleAttributes?.flex?.shrink}
+								value={
+									willEditedItem?.styleAttributes?.flex?.shrink === 1
+										? ""
+										: willEditedItem?.styleAttributes?.flex?.shrink
+								}
 								placeholder="1"
 								onChange={(e) =>
-									updateStyleAttribute("flex", "shrink", e.target.value)
+									updateStyleAttribute(
+										"flex",
+										"shrink",
+										e.target.value,
+										true,
+										1
+									)
 								}
 							/>
 						</div>
 					</div>
+					{/* Flex Shrint End */}
 				</div>
+				{/* Flex Attribute End*/}
+				{/* Flex Wrap Start */}
 				<div className="space-from-top">
 					<div>FLEX WRAP</div>
 					<div>
@@ -363,6 +413,7 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 						</ToggleButtonGroup>
 					</div>
 				</div>
+				{/* Flex Wrap End */}
 			</div>
 		);
 	}
@@ -370,6 +421,7 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 	function renderAlignmentArea() {
 		return (
 			<div className="pg-menu-tab-style">
+				{/* Justify Content Start */}
 				<div>
 					<div>JUSTIFY CONTENT</div>
 					<div>
@@ -398,6 +450,8 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 						</FormControl>
 					</div>
 				</div>
+				{/* Justify Content End */}
+				{/* Align Items Start */}
 				<div className="space-from-top">
 					<div>ALIGN ITEMS</div>
 					<div>
@@ -427,6 +481,8 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 						</FormControl>
 					</div>
 				</div>
+				{/* Align Items End */}
+				{/* Align Self Start */}
 				<div className="space-from-top">
 					<div>ALIGN SELF</div>
 					<div>
@@ -453,6 +509,8 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 						</FormControl>
 					</div>
 				</div>
+				{/* Align Self End */}
+				{/* Align Content Start */}
 				<div className="space-from-top">
 					<div>ALIGN CONTENT</div>
 					<div>
@@ -483,6 +541,7 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 						</FormControl>
 					</div>
 				</div>
+				{/* Align Content End */}
 			</div>
 		);
 	}
@@ -490,70 +549,139 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 	function renderLayoutArea() {
 		return (
 			<div className="pg-menu-tab-style">
+				{/* Width Height Start */}
 				<div>
 					<div>WIDTH&nbsp;x&nbsp;HEIGHT</div>
 					<div className="pg-menu-input-aligner">
 						<TextField
-							value={willEditedItem?.styleAttributes?.layout.width}
+							value={
+								willEditedItem?.styleAttributes?.layout.width === "auto"
+									? ""
+									: willEditedItem?.styleAttributes?.layout.width
+							}
 							size="small"
 							style={{ marginRight: "15px" }}
+							placeholder="auto"
 							onChange={(e) =>
-								updateStyleAttribute("layout", "width", e.target.value)
+								updateStyleAttribute(
+									"layout",
+									"width",
+									e.target.value,
+									true,
+									"auto"
+								)
 							}
 						/>
 						<TextField
-							value={willEditedItem?.styleAttributes?.layout.height}
+							value={
+								willEditedItem?.styleAttributes?.layout.height === "auto"
+									? ""
+									: willEditedItem?.styleAttributes?.layout.height
+							}
 							size="small"
+							placeholder="auto"
 							onChange={(e) =>
-								updateStyleAttribute("layout", "height", e.target.value)
+								updateStyleAttribute(
+									"layout",
+									"height",
+									e.target.value,
+									true,
+									"auto"
+								)
 							}
 						/>
 					</div>
 				</div>
+				{/* Width Height End */}
+				{/* MaxWidth x MaxHeight Start */}
 				<div className="space-from-top">
 					<div>MAX-WIDTH&nbsp;x&nbsp;MAX-HEIGHT</div>
 					<div className="pg-menu-input-aligner">
 						<TextField
-							value={willEditedItem?.styleAttributes?.layout.maxWidth}
+							value={
+								willEditedItem?.styleAttributes?.layout.maxWidth === "none"
+									? ""
+									: willEditedItem?.styleAttributes?.layout.maxWidth
+							}
 							size="small"
 							placeholder="none"
 							style={{ marginRight: "15px" }}
 							onChange={(e) =>
-								updateStyleAttribute("layout", "maxWidth", e.target.value)
+								updateStyleAttribute(
+									"layout",
+									"maxWidth",
+									e.target.value,
+									true,
+									"none"
+								)
 							}
 						/>
 						<TextField
-							value={willEditedItem?.styleAttributes?.layout.maxHeight}
+							value={
+								willEditedItem?.styleAttributes?.layout.maxHeight === "none"
+									? ""
+									: willEditedItem?.styleAttributes?.layout.maxHeight
+							}
 							size="small"
 							placeholder="none"
 							onChange={(e) =>
-								updateStyleAttribute("layout", "maxHeight", e.target.value)
+								updateStyleAttribute(
+									"layout",
+									"maxHeight",
+									e.target.value,
+									true,
+									"none"
+								)
 							}
 						/>
 					</div>
 				</div>
+				{/* MaxWidth x MaxHeight End */}
+				{/* MinWidth x MinHeight Start */}
 				<div className="space-from-top">
 					<div>MIN-WIDTH&nbsp;x&nbsp;MIN-HEIGHT</div>
 					<div className="pg-menu-input-aligner">
 						<TextField
-							value={willEditedItem?.styleAttributes?.layout.minWidth}
+							value={
+								willEditedItem?.styleAttributes?.layout.minWidth === 0
+									? ""
+									: willEditedItem?.styleAttributes?.layout.minWidth
+							}
 							size="small"
 							placeholder="0"
 							style={{ marginRight: "15px" }}
 							onChange={(e) =>
-								updateStyleAttribute("layout", "minWidth", e.target.value)
+								updateStyleAttribute(
+									"layout",
+									"minWidth",
+									e.target.value,
+									true,
+									0
+								)
 							}
 						/>
 						<TextField
-							value={willEditedItem?.styleAttributes?.layout.minHeight}
+							value={
+								willEditedItem?.styleAttributes?.layout.minHeight === 0
+									? ""
+									: willEditedItem?.styleAttributes?.layout.minHeight
+							}
 							size="small"
 							placeholder="0"
 							onChange={(e) =>
-								updateStyleAttribute("layout", "minHeight", e.target.value)
+								updateStyleAttribute(
+									"layout",
+									"minHeight",
+									e.target.value,
+									true,
+									0
+								)
 							}
 						/>
 					</div>
 				</div>
+				{/* MinWidth x MinHeight End */}
+				{/* Aspect Ratio Start */}
 				<div className="space-from-top">
 					<div>ASPECT RATIO</div>
 					<div className="pg-menu-input-aligner">
@@ -573,92 +701,186 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 						/>
 					</div>
 				</div>
+				{/* Aspect Ratio End */}
+				{/* Padding Start */}
 				<div className="space-from-top set-center">
 					<div>
 						<TextField
-							value={willEditedItem?.styleAttributes?.layout.paddingTop}
+							value={
+								willEditedItem?.styleAttributes?.layout.paddingTop === 0
+									? ""
+									: willEditedItem?.styleAttributes?.layout.paddingTop
+							}
 							size="small"
 							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
+							placeholder="0"
 							onChange={(e) =>
-								updateStyleAttribute("layout", "paddingTop", e.target.value)
+								updateStyleAttribute(
+									"layout",
+									"paddingTop",
+									e.target.value,
+									true,
+									0
+								)
 							}
 						/>
 					</div>
 					<div className="order-side-by-side set-center-vertical">
 						<TextField
-							value={willEditedItem?.styleAttributes?.layout.paddingLeft}
+							value={
+								willEditedItem?.styleAttributes?.layout.paddingLeft === 0
+									? ""
+									: willEditedItem?.styleAttributes?.layout.paddingLeft
+							}
 							size="small"
 							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
+							placeholder="0"
 							onChange={(e) =>
-								updateStyleAttribute("layout", "paddingLeft", e.target.value)
+								updateStyleAttribute(
+									"layout",
+									"paddingLeft",
+									e.target.value,
+									true,
+									0
+								)
 							}
 						/>
 						<span className="give-space-horizontal">PADDING</span>
 						<TextField
-							value={willEditedItem?.styleAttributes?.layout.paddingRight}
+							value={
+								willEditedItem?.styleAttributes?.layout.paddingRight === 0
+									? ""
+									: willEditedItem?.styleAttributes?.layout.paddingRight
+							}
 							size="small"
 							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
+							placeholder="0"
 							onChange={(e) =>
-								updateStyleAttribute("layout", "paddingRight", e.target.value)
+								updateStyleAttribute(
+									"layout",
+									"paddingRight",
+									e.target.value,
+									true,
+									0
+								)
 							}
 						/>
 					</div>
 					<div>
 						<TextField
-							value={willEditedItem?.styleAttributes?.layout.paddingBottom}
+							value={
+								willEditedItem?.styleAttributes?.layout.paddingBottom === 0
+									? ""
+									: willEditedItem?.styleAttributes?.layout.paddingBottom
+							}
 							size="small"
 							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
+							placeholder="0"
 							onChange={(e) =>
-								updateStyleAttribute("layout", "paddingBottom", e.target.value)
+								updateStyleAttribute(
+									"layout",
+									"paddingBottom",
+									e.target.value,
+									true,
+									0
+								)
 							}
 						/>
 					</div>
 				</div>
+				{/* Padding End */}
+				{/* Margin Start */}
 				<div className="space-from-top set-center">
 					<div>
 						<TextField
-							value={willEditedItem?.styleAttributes?.layout.marginTop}
+							value={
+								willEditedItem?.styleAttributes?.layout.marginTop === 0
+									? ""
+									: willEditedItem?.styleAttributes?.layout.marginTop
+							}
 							disabled={isRootNode()}
 							size="small"
 							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
+							placeholder="0"
 							onChange={(e) =>
-								updateStyleAttribute("layout", "marginTop", e.target.value)
+								updateStyleAttribute(
+									"layout",
+									"marginTop",
+									e.target.value,
+									true,
+									0
+								)
 							}
 						/>
 					</div>
 					<div className="order-side-by-side set-center-vertical">
 						<TextField
-							value={willEditedItem?.styleAttributes?.layout.marginLeft}
+							value={
+								willEditedItem?.styleAttributes?.layout.marginLeft === 0
+									? ""
+									: willEditedItem?.styleAttributes?.layout.marginLeft
+							}
 							disabled={isRootNode()}
 							size="small"
 							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
+							placeholder="0"
 							onChange={(e) =>
-								updateStyleAttribute("layout", "marginLeft", e.target.value)
+								updateStyleAttribute(
+									"layout",
+									"marginLeft",
+									e.target.value,
+									true,
+									0
+								)
 							}
 						/>
 						<span className="give-space-horizontal">MARGIN</span>
 						<TextField
-							value={willEditedItem?.styleAttributes?.layout.marginRight}
+							value={
+								willEditedItem?.styleAttributes?.layout.marginRight === 0
+									? ""
+									: willEditedItem?.styleAttributes?.layout.marginRight
+							}
 							disabled={isRootNode()}
 							size="small"
 							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
+							placeholder="0"
 							onChange={(e) =>
-								updateStyleAttribute("layout", "marginRight", e.target.value)
+								updateStyleAttribute(
+									"layout",
+									"marginRight",
+									e.target.value,
+									true,
+									0
+								)
 							}
 						/>
 					</div>
 					<div>
 						<TextField
-							value={willEditedItem?.styleAttributes?.layout.marginBottom}
+							value={
+								willEditedItem?.styleAttributes?.layout.marginBottom === 0
+									? ""
+									: willEditedItem?.styleAttributes?.layout.marginBottom
+							}
 							size="small"
 							disabled={isRootNode()}
 							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
+							placeholder="0"
 							onChange={(e) =>
-								updateStyleAttribute("layout", "marginBottom", e.target.value)
+								updateStyleAttribute(
+									"layout",
+									"marginBottom",
+									e.target.value,
+									true,
+									0
+								)
 							}
 						/>
 					</div>
 				</div>
+				{/* Margin End */}
+				{/* Position Type Start */}
 				<div className="space-from-top">
 					<div>POSITION TYPE</div>
 					<div>
@@ -687,51 +909,94 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 						</ToggleButtonGroup>
 					</div>
 				</div>
+				{/* Position Type End */}
+				{/* Position (top, right, bottom, left) Start */}
 				<div className="space-from-top set-center">
 					<div>
 						<TextField
-							value={willEditedItem?.styleAttributes?.layout.top}
+							value={
+								willEditedItem?.styleAttributes?.layout.top === null
+									? ""
+									: willEditedItem?.styleAttributes?.layout.top
+							}
 							disabled={isRootNode()}
 							size="small"
 							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
 							onChange={(e) =>
-								updateStyleAttribute("layout", "top", e.target.value)
+								updateStyleAttribute(
+									"layout",
+									"top",
+									e.target.value,
+									true,
+									null
+								)
 							}
 						/>
 					</div>
 					<div className="order-side-by-side set-center-vertical">
 						<TextField
-							value={willEditedItem?.styleAttributes?.layout.left}
+							value={
+								willEditedItem?.styleAttributes?.layout.left === null
+									? ""
+									: willEditedItem?.styleAttributes?.layout.left
+							}
 							disabled={isRootNode()}
 							size="small"
 							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
 							onChange={(e) =>
-								updateStyleAttribute("layout", "left", e.target.value)
+								updateStyleAttribute(
+									"layout",
+									"left",
+									e.target.value,
+									true,
+									null
+								)
 							}
 						/>
 						<span className="give-space-horizontal">POSITION</span>
 						<TextField
-							value={willEditedItem?.styleAttributes?.layout.right}
+							value={
+								willEditedItem?.styleAttributes?.layout.right === null
+									? ""
+									: willEditedItem?.styleAttributes?.layout.right
+							}
 							disabled={isRootNode()}
 							size="small"
 							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
 							onChange={(e) =>
-								updateStyleAttribute("layout", "right", e.target.value)
+								updateStyleAttribute(
+									"layout",
+									"right",
+									e.target.value,
+									true,
+									null
+								)
 							}
 						/>
 					</div>
 					<div>
 						<TextField
-							value={willEditedItem?.styleAttributes?.layout.bottom}
+							value={
+								willEditedItem?.styleAttributes?.layout.bottom === null
+									? ""
+									: willEditedItem?.styleAttributes?.layout.bottom
+							}
 							size="small"
 							disabled={isRootNode()}
 							inputProps={{ style: { textAlign: "center", maxWidth: "40px" } }}
 							onChange={(e) =>
-								updateStyleAttribute("layout", "bottom", e.target.value, false)
+								updateStyleAttribute(
+									"layout",
+									"bottom",
+									e.target.value,
+									true,
+									null
+								)
 							}
 						/>
 					</div>
 				</div>
+				{/* Position (top, right, bottom, left) End */}
 			</div>
 		);
 	}
@@ -742,8 +1007,7 @@ const PGMenu = ({ DOM, setDOM, selectedItemId, setSelectedItemId }) => {
 	return (
 		<div className="pg-menu">
 			<div className="pg-menu-share">
-				<div className="pg-menu-share-item">Get Code</div>
-				<div className="pg-menu-share-item">Share</div>
+				<div className="pg-menu-share-item">Flex Attributes</div>
 			</div>
 			<div className="pg-menu-box">
 				{selectedItemId === "" ? renderNoSelectedItem() : renderSelectedItem()}
